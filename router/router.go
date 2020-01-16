@@ -1,19 +1,21 @@
 package router
 
 import (
+	"net/http"
 	"ptest/controllers"
 
 	"github.com/spf13/viper"
 
-	"github.com/gin-gonic/gin"
+	"github.com/julienschmidt/httprouter"
 )
 
 func InitRouter() {
-	router := gin.Default()
-	v1 := router.Group("v1")
-	v1.GET("/user/login", controllers.UserLogin)
-	v1.POST("/user/register", controllers.Register)
-	v1.GET("/chk", controllers.Chk)
+	router := httprouter.New()
 
-	router.Run(viper.GetString("server.port"))
+	router.GET("/user/login", controllers.UserLogin)
+	router.POST("/user/register", controllers.Register)
+	router.GET("/chk", controllers.Chk)
+	http.ListenAndServe(viper.GetString("server.port"), router)
+
+	//router.Run(viper.GetString("server.port"))
 }

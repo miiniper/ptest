@@ -7,9 +7,12 @@ import (
 	"net/http"
 	"ptest/loges"
 
-	"go.uber.org/zap"
+	"github.com/spf13/viper"
+	"gopkg.in/mgo.v2"
 
-	"github.com/gin-gonic/gin"
+	"github.com/julienschmidt/httprouter"
+
+	"go.uber.org/zap"
 )
 
 type HttpStatus struct {
@@ -25,27 +28,47 @@ type UserInfo struct {
 	Mail     string `json:"mail"`
 }
 
-func Register(c *gin.Context) {
+func Register(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var user UserInfo
-	user.Name = c.Query("name")
-	body, _ := ioutil.ReadAll(c.Request.Body)
+
+	body, _ := ioutil.ReadAll(r.Body)
 	err := json.Unmarshal(body, &user)
 	if err != nil {
 		loges.Loges.Error("", zap.Error(err))
 	}
-	fmt.Println(user.Name)
+	fmt.Println(user.Name, user.Mail, user.Password, user.StaffId)
+	//db.Inserts("user", user)
+
+	mgoAddr := viper.GetString("mgo.addr")
+	Session, err := mgo.Dial(mgoAddr)
+	if err != nil {
+		loges.Loges.Error("", zap.Error(err))
+	}
+	defer Session.Close()
+	Session.SetMode(mgo.Monotonic, true)
+	err = Session.DB("admin").Login(viper.GetString("mgo.user"), viper.GetString("mgo.pwd"))
+	if err != nil {
+		loges.Loges.Error("", zap.Error(err))
+	}
+
+	cc := Session.DB("ptest").C("user")
+	err = cc.Insert(user)
+	if err != nil {
+		loges.Loges.Error("", zap.Error(err))
+	}
 }
 
-func UserLogin(c *gin.Context) {
+func UserLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	//fmt.Println("todo ")
 	h1 := HttpStatus{StatusCode: 200, Msg: "ok"}
 	w2, _ := json.Marshal(h1)
-	c.Writer.Write(w2)
+	w.Write(w2)
 
 }
 
-func Chk(c *gin.Context) {
-	message := "OK"
-	c.String(http.StatusOK, message)
+func Chk(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	h1 := HttpStatus{StatusCode: 200, Msg: "ok"}
+	w2, _ := json.Marshal(h1)
+	w.Write(w2)
 
 }

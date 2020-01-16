@@ -2,7 +2,7 @@
 port = ":8080"
 
 [mgo]
-addr = "10.21.8.72:27107"
+addr = "10.21.8.72:27017"
 db = "ptest"
 user  = "root"
 pwd = "rootpwd"
