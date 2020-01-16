@@ -1,7 +1,7 @@
-package Router
+package router
 
 import (
-	"ptest/Controllers"
+	"ptest/controllers"
 
 	"github.com/spf13/viper"
 
@@ -11,8 +11,9 @@ import (
 func InitRouter() {
 	router := gin.Default()
 	v1 := router.Group("v1")
-	v1.GET("/login", Controllers.UserLogin)
-	v1.GET("/chk", Controllers.Chk)
+	v1.GET("/user/login", controllers.UserLogin)
+	v1.POST("/user/register", controllers.Register)
+	v1.GET("/chk", controllers.Chk)
 
 	router.Run(viper.GetString("server.port"))
 }

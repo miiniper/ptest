@@ -1,15 +1,15 @@
 package main //import ptest
 
 import (
-	"ptest/Conf"
-	"ptest/Loges"
-	"ptest/Router"
+	"ptest/conf"
+	"ptest/loges"
+	"ptest/router"
 )
 
 func main() {
-	Loges.Loges.Info("starting server....")
-	Conf.InitConf()
+	loges.Loges.Info("starting server....")
+	conf.InitConf()
 
-	Router.InitRouter()
+	router.InitRouter()
 
 }

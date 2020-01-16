@@ -1,4 +1,4 @@
-package Loges
+package loges
 
 import (
 	"os"
