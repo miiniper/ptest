@@ -8,9 +8,12 @@ import (
 
 func main() {
 	loges.Loges.Info("starting server....")
-	conf.InitConf()
-	//	db.InitMgo()
 
 	router.InitRouter()
 
+}
+
+func init() {
+	conf.InitConf()
+	//db.InitMgo()
 }

@@ -2,13 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
+	"ptest/db"
 	"ptest/loges"
-
-	"github.com/spf13/viper"
-	"gopkg.in/mgo.v2"
 
 	"github.com/julienschmidt/httprouter"
 
@@ -36,26 +33,9 @@ func Register(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	if err != nil {
 		loges.Loges.Error("", zap.Error(err))
 	}
-	fmt.Println(user.Name, user.Mail, user.Password, user.StaffId)
-	//db.Inserts("user", user)
 
-	mgoAddr := viper.GetString("mgo.addr")
-	Session, err := mgo.Dial(mgoAddr)
-	if err != nil {
-		loges.Loges.Error("", zap.Error(err))
-	}
-	defer Session.Close()
-	Session.SetMode(mgo.Monotonic, true)
-	err = Session.DB("admin").Login(viper.GetString("mgo.user"), viper.GetString("mgo.pwd"))
-	if err != nil {
-		loges.Loges.Error("", zap.Error(err))
-	}
+	db.Inserts("user", user)
 
-	cc := Session.DB("ptest").C("user")
-	err = cc.Insert(user)
-	if err != nil {
-		loges.Loges.Error("", zap.Error(err))
-	}
 }
 
 func UserLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
