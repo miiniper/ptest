@@ -2,6 +2,7 @@ package main //import ptest
 
 import (
 	"ptest/conf"
+	"ptest/db"
 	"ptest/loges"
 	"ptest/router"
 )
@@ -14,6 +15,8 @@ func main() {
 }
 
 func init() {
+
 	conf.InitConf()
-	//db.InitMgo()
+	db.InitMgo()
+
 }

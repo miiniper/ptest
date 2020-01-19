@@ -8,31 +8,36 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
-func InitMgo() *mgo.Session {
-	Sess, err := mgo.Dial(viper.GetString("mgo.addr"))
+func InitMgo() {
+	sess, err := mgo.Dial(viper.GetString("mgo.addr"))
 	if err != nil {
 		loges.Loges.Error("", zap.Error(err))
 	}
 
-	//	defer Sess.Close()
-
-	Sess.SetMode(mgo.Monotonic, true)
-	err = Sess.DB("admin").Login(viper.GetString("mgo.user"), viper.GetString("mgo.pwd"))
+	sess.SetMode(mgo.Monotonic, true)
+	err = sess.DB("admin").Login(viper.GetString("mgo.user"), viper.GetString("mgo.pwd"))
 	if err != nil {
 		loges.Loges.Error("", zap.Error(err))
 	}
-	return Sess
+	Sess = sess
 }
 
+var Sess *mgo.Session
+
 func Inserts(table string, data interface{}) error {
-	sess := InitMgo()
-	defer sess.Close()
-	c := sess.DB("ptest").C(table)
+	//Sess = InitMgo()
+	defer Sess.Close()
+	c := Sess.DB("ptest").C(table)
 	err := c.Insert(&data)
 	if err != nil {
 		loges.Loges.Error("", zap.Error(err))
 		return err
 	}
 	return nil
-
 }
+
+//
+//func Selects() {
+//	sess := InitMgo()
+//	defer sess.Close()
+//}
